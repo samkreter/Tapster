@@ -30,30 +30,49 @@ app = Flask(__name__)
 def index():
     return "Hello World Broski"
 
+@app.route('/addSettings', methods=['POST'])
+def addSettings():
+
+    settings = request.form['settings']
+
+    if (settings != "null"):
+        setting_queue = FifoDiskQueue("settings_file")
+        setting_queue.push(settings.encode(encoding='UTF-8'))
+        setting_queue.close()
+
+        return "sucess"
+
+    return "No settings to update"
+
+
+@app.route('/createDrink', methods=['POST'])
+def createDrink():
+    drink_name = request.form['drink']
+    return "Hello World Broski"
+
 #Recieve instructions to have drinks
-@app.route('/tab', methods=['POST'])
-def tab():
+@app.route('/addTab', methods=['POST'])
+def addTab():
 
     drink_name = request.form['drink_name']
-    settings = request.form['settings']
 
     if(drink_name != "null"):
         conn = sqlite3.connect("bar.db")
         tab = FifoDiskQueue("tab_file")
-        setting_queue = FifoDiskQueue("settings_file")
 
-        drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()[0]
-        print(drink_id)
-        tab.push(str(drink_id).encode(encoding='UTF-8'))
+        drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()
+
+        if(drink_id == None):
+            return json.dumps({'success':False,'error':"NoDrinkInDB"}), 400, {'ContentType':'application/json'}
+
+        tab.push(str(drink_id[0]).encode(encoding='UTF-8'))
         tab.close()
 
-    if (settings != "null"):
-        setting_queue.push(settings.encode(encoding='UTF-8'))
-        setting_queue.close()
+        conn.close()
 
-    conn.close()
+        return json.dumps({'success':True, 'hello':'hey'}), 200, {'ContentType':'application/json'}
 
-    return "Good Request Bro"
+    return json.dumps({'success':False,'error':"DrinkNameNull"}), 400, {'ContentType':'application/json'}
 
 
 
@@ -112,6 +131,6 @@ def tap():
 
 
 if __name__ == '__main__':
-    app.run(debug=True ,host='0.0.0.0',port=8000)
+    app.run(debug=True ,host='0.0.0.0',port=8080)
 
 
