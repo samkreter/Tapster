@@ -23,6 +23,25 @@ def index():
     return json.dumps(return_json)
 
 
+@app.route('/registerCabinet')
+def registerCabinet():
+    return json.dumbs({'cabinet_id':24})
+
+@app.route('/tap')
+def tap():
+    data = {
+        'settings':{'hello':"world"},
+        'drink':{
+            'drink_name':"Rum and Coke",
+            'ingredients':[{'name':'Rum','ratio':1},{'name':'Coke','ratio':3}]
+        }
+    }
+
+
+    return json.dumbs(data)
+
+
+
 ## INSTRUCTIONS
 
 ## RUN python3 carter_server.py
