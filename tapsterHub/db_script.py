@@ -1,7 +1,7 @@
 import sqlite3
 
 
-conn = sqlite3.connect("bare.db")
+conn = sqlite3.connect("bar.db")
 
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Ingredient (
@@ -10,20 +10,12 @@ conn.execute('''
     );
 ''')
 
-conn.execute('INSERT INTO Ingredient(name) VALUES ("Rum");')
-
-
-conn.execute('INSERT INTO Ingredient(name) VALUES ("Coke");')
-
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Drink (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL UNIQUE
     );
 ''')
-
-
-conn.execute('INSERT INTO Drink(name) VALUES ("Rum and Coke");')
 
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Ingredients_Drinks (
@@ -34,9 +26,19 @@ conn.execute('''
     );
 ''')
 
+
+#INsert Ingredientsf
+conn.execute('INSERT INTO Ingredient(name) VALUES ("Rum");')
+conn.execute('INSERT INTO Ingredient(name) VALUES ("Coke");')
+
+#Insert Drink
+conn.execute('INSERT INTO Drink(name) VALUES ("Rum and Coke");')
+
+#Insert Ingredients and Drinks combine
 conn.execute('INSERT INTO Ingredients_Drinks(ingredient_id,drink_id,ratio) VALUES(1,1,"1");')
 conn.execute('INSERT INTO Ingredients_Drinks(ingredient_id,drink_id,ratio) VALUES(2,1,"3");')
 
+#Select Drinks
 conn.execute('''
     SELECT Drink.name, Ingredient.name, Ingredients_Drinks.ratio
     FROM Drink
