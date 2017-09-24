@@ -1,38 +1,88 @@
+import requests
+import json
+
+
+class CabinetConfig:
+
+    def get_location(ingredient):
+        """
+        Get the location of the container for ingredient
+
+        Args:
+            ingredient (str): the ingredient to retrieve the location of
+
+        Returns:
+            location (int): int representing location. -1 indicates failure
+        """
+
+        locfile = "liquor_locations.txt"
+        f = open(locfile, "r")
+
+        #iterate over lines in the location file to look up location
+        for line in f.readlines():
+            entry = line.split(':')
+
+            if entry[0].lower() == ingredient.lower():
+                return  int(entry[1])
+
+        return -1
+
+
+
+
 class Instructions:
-	_instruction_list = []
 
-	''' e.g. [ 
-			[1, 2]
-			[2]
-			[2]
-			 ] '''
+    def __init__(self, recipe):
+        """
+        Generate a instance of instructions for the Cabinet to prepare a drink.
+        Instructions are a list of steps, each step is a list of all locations
+        to pour a shot from.
+        e.g. [[1, 2], [2], [2]]
 
-	def __init__(self, recipe):
+        Args:
+            recipe: list in format [{'ratio': INT, 'name': STR}, ...]
 
-		#set up instruction structure
-		instructions_len = max([ingredient.shots for ingredient in recipe])
-		for i in range(0, instructions_len):
-			_instruction_list.append([])
+        """
 
-		#populate instructions
-		for ingredient in recipe:
+        #set up instruction structure
+        self._steps = []
+        num_steps = max([ingredient['ratio'] for ingredient in recipe])
 
-			bottle = deviceconfig.getbottle(ingredient.name)
+        for i in range(num_steps):
+            self._steps.append([])
 
-			for i in range(0, ingredient.shots):
-				_instruction_list[i].append(bottle)
+        #populate instructions
+        for ingredient in recipe:
 
-	def execute():
-		for step in self._instruction_list:
-			for ingredient in step:
-				#implement some kind of async thing here later
-				cabinet.get(ingredient)
+            location = CabinetConfig.get_location(ingredient['name'])
+            #add error check here if get_location returns -1
+
+            for i in range(0, ingredient['ratio']):
+                self._steps[i].append(location)
+
+    def execute(self):
+        """
+        Execute the instructions to prepare a drink
+        """
+
+        stepcounter = 0
+        for step in self._steps:
+            stepcounter += 1
+            print("Step %s" % stepcounter)
+            for location in step:
+                print("SHOT FROM LOCATION %s" % location)
 
 
-#/tap
+if __name__ == "__main__":
 
-def main():
+    url = 'http://localhost:8000'
 
-	while(True):
-		r = requests.get('')
+    while(True):
+        r = requests.get(url)
+        data = json.loads(r.text)
+        settings = data['settings']
+        drink = data['drink']
+
+        instructions = Instructions(drink)
+        instructions.execute()
 
