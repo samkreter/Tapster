@@ -79,16 +79,16 @@ if __name__ == "__main__":
 
     #get id
 
-    r = requests.get(base_url + "/registerCabinet")
-
+    r = requests.get(base_url + '/registerCabinet')
+    cabinet_id = r.text
 
     #listen for commands
     while(True):
-        r = requests.get(base_url + "/tap", params={'cabinet_id': cabinet_id})
+        r = requests.get(base_url + '/tap', params=cabinet_id)
         data = json.loads(r.text)
         settings = data['settings']
-        drink = data['drink']
+        drink_recipe = data['drink']['ingredients']
 
-        instructions = Instructions(drink)
+        instructions = Instructions(drink_recipe)
         instructions.execute()
 

@@ -25,7 +25,7 @@ def index():
 
 @app.route('/registerCabinet')
 def registerCabinet():
-    return json.dumbs({'cabinet_id':24})
+    return json.dumps({'cabinet_id':24})
 
 @app.route('/tap')
 def tap():
@@ -38,7 +38,7 @@ def tap():
     }
 
 
-    return json.dumbs(data)
+    return json.dumps(data)
 
 
 
