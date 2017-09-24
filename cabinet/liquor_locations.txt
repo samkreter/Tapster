@@ -1,0 +1,4 @@
+RUM:1
+COKE:2
+GIN:3
+TONIC:4
