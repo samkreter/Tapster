@@ -75,14 +75,20 @@ class Instructions:
 
 if __name__ == "__main__":
 
-    url = 'http://localhost:8000'
+    base_url = 'http://localhost:8000'
 
+    #get id
+
+    r = requests.get(base_url + '/registerCabinet')
+    cabinet_id = r.text
+
+    #listen for commands
     while(True):
-        r = requests.get(url)
+        r = requests.get(base_url + '/tap', params=cabinet_id)
         data = json.loads(r.text)
         settings = data['settings']
-        drink = data['drink']
+        drink_recipe = data['drink']['ingredients']
 
-        instructions = Instructions(drink)
+        instructions = Instructions(drink_recipe)
         instructions.execute()
 
