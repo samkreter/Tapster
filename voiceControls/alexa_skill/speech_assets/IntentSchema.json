@@ -1,0 +1,15 @@
+{
+	"intents":
+	[
+		{
+		   "intent": "MakeDrinkRequest",
+		   "slots":
+		   [
+		     {
+		       "name": "drink",
+		       "type": "DRINK_NAMES"
+		     }
+		   ]
+		}
+	]
+}
