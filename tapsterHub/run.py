@@ -96,38 +96,54 @@ def getTab():
     tab.close()
     return json.dumps(content)
 
+@app.route('/registerCabinet', methods=['GET'])
+def registerCabinet():
+
+    cabinet_id = request.args.get("cabinet_id")
+    if(cabinet_id is None):
+        #create id and store in the database
+        cabinet_id = 7
+
+    return json.dumbs({'cabinet_id':cabinet_id})
+
 #Route to send the drink to be made
-@app.route('/tap')
+@app.route('/tap',methods=['GET'])
 def tap():
 
-    tab = FifoDiskQueue("tab_file")
-    current_drink_id = tab.pop()
+    cabinet_id = request.args.get("cabinet_id")
+    if(cabinet_id is not None):
 
-    if(current_drink_id != None):
-        conn = sqlite3.connect("bar.db")
-        drink_id = int(current_drink_id.decode(encoding='UTF-8'))
+        tab = FifoDiskQueue("tab_file")
+        current_drink_id = tab.pop()
 
-        tab.close()
-        cursor = conn.execute(getSerachString(drink_id))
+        if(current_drink_id != None):
+            conn = sqlite3.connect("bar.db")
+            drink_id = int(current_drink_id.decode(encoding='UTF-8'))
 
-        ingredients = []
+            tab.close()
+            cursor = conn.execute(getSerachString(drink_id))
 
-        for row in cursor:
-            ingredients.append({
-                "name": row[1],
-                "ratio": row[2]
-            })
+            ingredients = []
 
-        drink = {
-            "drink_name": row[0],
-            "ingredients": ingredients
-        }
+            for row in cursor:
+                ingredients.append({
+                    "name": row[1],
+                    "ratio": row[2]
+                })
 
-        response = {"settings":"null","drink":drink}
+            drink = {
+                "drink_name": row[0],
+                "ingredients": ingredients
+            }
 
-        return json.dumps(response)
+            response = {"settings":"null","drink":drink}
 
-    return json.dumps({"settings": "null", "drink":"null"})
+            return json.dumps(response)
+
+        return json.dumps({"settings": "null", "drink":"null"})
+
+    else:
+        return json.dumps({'success': False,'error':"Must Have Cabinet ID to access to tap"}), 400, {'ContentType':'application/json'}
 
 
 if __name__ == '__main__':
