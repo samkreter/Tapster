@@ -13,6 +13,16 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
+    return "Hello World Broski"
+
+#Recieve instructions to have drinks
+@app.route('/tab')
+def tab():
+
+
+#Route to send the drink to be made
+@app.route('/tap')
+def tap():
 
 
 
