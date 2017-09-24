@@ -1,2 +1,4 @@
 flask
 queuelib
+requests
+json
