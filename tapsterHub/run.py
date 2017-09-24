@@ -19,7 +19,7 @@ def getSerachString(drink_id):
         JOIN Ingredients_Drinks ON (Drink.id = Ingredients_Drinks.drink_id)
         JOIN Ingredient ON (Ingredients_Drinks.ingredient_id = Ingredient.id)
     '''
-    return statment + 'WHERE Drink.id = ' + drink_id +';';
+    return statment + 'WHERE Drink.id = ' + str(drink_id) +';';
 
 
 
@@ -31,34 +31,65 @@ def index():
     return "Hello World Broski"
 
 #Recieve instructions to have drinks
-@app.route('/tab', methods=['GET', 'POST'])
+@app.route('/tab', methods=['POST'])
 def tab():
 
-    #drink_name = request.form['drink_name']
-    drink_name = "Rum and Coke"
+    drink_name = request.form['drink_name']
+    settings = request.form['settings']
 
-    conn = sqlite3.connect("bar.db")
-    tab = FifoDiskQueue("tabfile")
+    if(drink_name != "null"):
+        conn = sqlite3.connect("bar.db")
+        tab = FifoDiskQueue("tab_file")
+        setting_queue = FifoDiskQueue("settings_file")
 
-    drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()
+        drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()[0]
+        print(drink_id)
+        tab.push(str(drink_id).encode(encoding='UTF-8'))
+        tab.close()
 
-    tab.push(drink_id)
+    if (settings != "null"):
+        setting_queue.push(settings.encode(encoding='UTF-8'))
+        setting_queue.close()
 
     conn.close()
 
+    return "Good Request Bro"
 
 
+
+#Route to send the drink to be made
+@app.route('/getTab')
+def getTab():
+    tab = FifoDiskQueue("tab_file")
+
+    content = []
+
+    t = tab.pop()
+
+    print(t)
+
+    while(t != None):
+        t = t.decode(encoding='UTF-8')
+        content.append(t)
+        t = tab.pop()
+
+
+    tab.close()
+    return json.dumps(content)
 
 #Route to send the drink to be made
 @app.route('/tap')
 def tap():
 
-    tab = FifoDiskQueue("tabfile")
-    current_drink = tab.pop()
+    tab = FifoDiskQueue("tab_file")
+    current_drink_id = tab.pop()
 
-    if(current_drink):
+    if(current_drink_id != None):
         conn = sqlite3.connect("bar.db")
-        cursor = conn.execute(getSerachString(drink_name))
+        drink_id = int(current_drink_id.decode(encoding='UTF-8'))
+
+        tab.close()
+        cursor = conn.execute(getSerachString(drink_id))
 
         ingredients = []
 

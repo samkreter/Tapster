@@ -26,12 +26,6 @@ conn.execute('''
     );
 ''')
 
-conn.execute('''
-    CREATE TABLE IF NOT EXISTS Tab (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        drink_id INTEGER REFERENCES Drink(id)
-    );
-''')
 
 #INsert Ingredientsf
 conn.execute('INSERT INTO Ingredient(name) VALUES ("Rum");')
@@ -43,10 +37,6 @@ conn.execute('INSERT INTO Drink(name) VALUES ("Rum and Coke");')
 #Insert Ingredients and Drinks combine
 conn.execute('INSERT INTO Ingredients_Drinks(ingredient_id,drink_id,ratio) VALUES(1,1,"1");')
 conn.execute('INSERT INTO Ingredients_Drinks(ingredient_id,drink_id,ratio) VALUES(2,1,"3");')
-
-#Insert tab
-conn.execute('INSERT INTO Tab(drink_id) VALUES(1);')
-conn.commit()
 
 #Select Drinks
 conn.execute('''
