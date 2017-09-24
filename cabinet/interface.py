@@ -75,10 +75,16 @@ class Instructions:
 
 if __name__ == "__main__":
 
-    url = 'http://localhost:8000'
+    base_url = 'http://localhost:8000'
 
+    #get id
+
+    r = requests.get(base_url + "/registerCabinet")
+
+
+    #listen for commands
     while(True):
-        r = requests.get(url)
+        r = requests.get(base_url + "/tap", params={'cabinet_id': cabinet_id})
         data = json.loads(r.text)
         settings = data['settings']
         drink = data['drink']
