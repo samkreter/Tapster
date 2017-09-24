@@ -17,7 +17,6 @@ conn.execute('''
     );
 ''')
 
-
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Ingredients_Drinks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -26,7 +25,6 @@ conn.execute('''
         ratio TEXT NOT NULL
     );
 ''')
-
 
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Tab (
@@ -39,7 +37,6 @@ conn.execute('''
 conn.execute('INSERT INTO Ingredient(name) VALUES ("Rum");')
 conn.execute('INSERT INTO Ingredient(name) VALUES ("Coke");')
 
-
 #Insert Drink
 conn.execute('INSERT INTO Drink(name) VALUES ("Rum and Coke");')
 
@@ -50,7 +47,6 @@ conn.execute('INSERT INTO Ingredients_Drinks(ingredient_id,drink_id,ratio) VALUE
 #Insert tab
 conn.execute('INSERT INTO Tab(drink_id) VALUES(1);')
 conn.commit()
-
 
 #Select Drinks
 conn.execute('''
