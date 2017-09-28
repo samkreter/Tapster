@@ -11,25 +11,28 @@ import os
 from queuelib import FifoDiskQueue
 
 
-def getSerachString(drink_id):
+DATABASE_NAME = "bar.db"
 
+def getdbConn():
+    return sqlite3.connect(DATABASE_NAME)
+
+def getSerachString(drink_id):
     statment  = '''
         SELECT Drink.name, Ingredient.name, Ingredients_Drinks.ratio
         FROM Drink
         JOIN Ingredients_Drinks ON (Drink.id = Ingredients_Drinks.drink_id)
         JOIN Ingredient ON (Ingredients_Drinks.ingredient_id = Ingredient.id)
     '''
+
     return statment + 'WHERE Drink.id = ' + str(drink_id) +';';
-
-
 
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return "Hello World Broski"
-
 
 
 @app.route('/addSettings', methods=['POST'])
@@ -52,14 +55,14 @@ def createDrink():
     drink_name = request.form['drink']
     return "Hello World Broski"
 
-#Recieve instructions to have drinks
+
 @app.route('/addTab', methods=['POST'])
 def addTab():
 
     drink_name = request.form['drink_name']
 
     if(drink_name != "null"):
-        conn = sqlite3.connect("bar.db")
+        conn = getdbConn()
         tab = FifoDiskQueue("tab_file")
 
         drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()
@@ -77,8 +80,6 @@ def addTab():
     return json.dumps({'success':False,'error':"DrinkNameNull"}), 400, {'ContentType':'application/json'}
 
 
-
-#Route to send the drink to be made
 @app.route('/getTab')
 def getTab():
     tab = FifoDiskQueue("tab_file")
@@ -95,17 +96,23 @@ def getTab():
     tab.close()
     return json.dumps(content)
 
+
 @app.route('/registerCabinet', methods=['GET'])
 def registerCabinet():
 
     cabinet_id = request.args.get("cabinet_id")
-    if(cabinet_id is None):
-        #create id and store in the database
-        cabinet_id = 7
+    conn = getdbConn()
 
-    return json.dumbs({'cabinet_id':cabinet_id})
+    if(cabinet_id != None):
+        cabinet_id = conn.execute('SELECT id from Cabinet WHERE id = ' + str(cabinet_id) + 'AND valid = 1;').fetchone()
 
-#Route to send the drink to be made
+    if(cabinet_id == None):
+        conn.execute('INSERT INTO Cabinet(valid) VALUES(1);')
+        conn.commit()
+
+    return json.dumps({'success': True, 'cabinet_id': cabinet_id}), 200, {'ContentType':'application/json'}
+
+
 @app.route('/tap',methods=['GET'])
 def tap():
 
@@ -116,7 +123,7 @@ def tap():
         current_drink_id = tab.pop()
 
         if(current_drink_id != None):
-            conn = sqlite3.connect("bar.db")
+            conn = getdbConn()
             drink_id = int(current_drink_id.decode(encoding='UTF-8'))
 
             tab.close()
