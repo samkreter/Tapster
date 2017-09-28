@@ -11,6 +11,11 @@ import os
 from queuelib import FifoDiskQueue
 
 
+DATABASE_NAME = "bar.db"
+
+def getdbConn():
+    return sqlite3.connect(DATABASE_NAME)
+
 def getSerachString(drink_id):
 
     statment  = '''
@@ -59,7 +64,7 @@ def addTab():
     drink_name = request.form['drink_name']
 
     if(drink_name != "null"):
-        conn = sqlite3.connect("bar.db")
+        conn = getdbConn()
         tab = FifoDiskQueue("tab_file")
 
         drink_id = conn.execute('SELECT id FROM Drink WHERE name LIKE "' + drink_name + '" LIMIT 1;').fetchone()
@@ -116,7 +121,7 @@ def tap():
         current_drink_id = tab.pop()
 
         if(current_drink_id != None):
-            conn = sqlite3.connect("bar.db")
+            conn = getdbConn()
             drink_id = int(current_drink_id.decode(encoding='UTF-8'))
 
             tab.close()
