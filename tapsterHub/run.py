@@ -17,24 +17,22 @@ def getdbConn():
     return sqlite3.connect(DATABASE_NAME)
 
 def getSerachString(drink_id):
-
     statment  = '''
         SELECT Drink.name, Ingredient.name, Ingredients_Drinks.ratio
         FROM Drink
         JOIN Ingredients_Drinks ON (Drink.id = Ingredients_Drinks.drink_id)
         JOIN Ingredient ON (Ingredients_Drinks.ingredient_id = Ingredient.id)
     '''
+
     return statment + 'WHERE Drink.id = ' + str(drink_id) +';';
-
-
 
 
 app = Flask(__name__)
 
+
 @app.route('/')
 def index():
     return "Hello World Broski"
-
 
 
 @app.route('/addSettings', methods=['POST'])
@@ -57,7 +55,7 @@ def createDrink():
     drink_name = request.form['drink']
     return "Hello World Broski"
 
-#Recieve instructions to have drinks
+
 @app.route('/addTab', methods=['POST'])
 def addTab():
 
@@ -82,8 +80,6 @@ def addTab():
     return json.dumps({'success':False,'error':"DrinkNameNull"}), 400, {'ContentType':'application/json'}
 
 
-
-#Route to send the drink to be made
 @app.route('/getTab')
 def getTab():
     tab = FifoDiskQueue("tab_file")
@@ -107,19 +103,16 @@ def registerCabinet():
     cabinet_id = request.args.get("cabinet_id")
     conn = getdbConn()
 
-
     if(cabinet_id != None):
-        #check if cabinet is valid in the db
         cabinet_id = conn.execute('SELECT id from Cabinet WHERE id = ' + str(cabinet_id) + 'AND valid = 1;').fetchone()
 
     if(cabinet_id == None):
         conn.execute('INSERT INTO Cabinet(valid) VALUES(1);')
         conn.commit()
 
-
     return json.dumps({'success': True, 'cabinet_id': cabinet_id}), 200, {'ContentType':'application/json'}
 
-#Route to send the drink to be made
+
 @app.route('/tap',methods=['GET'])
 def tap():
 
