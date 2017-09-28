@@ -26,6 +26,13 @@ conn.execute('''
     );
 ''')
 
+conn.execute('''
+    CREATE TABLE IF NOT EXISTS Cabinet (
+
+
+    );
+''')
+
 
 #INsert Ingredientsf
 conn.execute('INSERT INTO Ingredient(name) VALUES ("Rum");')
