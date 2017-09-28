@@ -30,6 +30,8 @@ app = Flask(__name__)
 def index():
     return "Hello World Broski"
 
+
+
 @app.route('/addSettings', methods=['POST'])
 def addSettings():
 
@@ -85,13 +87,10 @@ def getTab():
 
     t = tab.pop()
 
-    print(t)
-
     while(t != None):
         t = t.decode(encoding='UTF-8')
         content.append(t)
         t = tab.pop()
-
 
     tab.close()
     return json.dumps(content)
