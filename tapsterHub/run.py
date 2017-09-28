@@ -100,15 +100,24 @@ def getTab():
     tab.close()
     return json.dumps(content)
 
+
 @app.route('/registerCabinet', methods=['GET'])
 def registerCabinet():
 
     cabinet_id = request.args.get("cabinet_id")
-    if(cabinet_id is None):
-        #create id and store in the database
-        cabinet_id = 7
+    conn = getdbConn()
 
-    return json.dumbs({'cabinet_id':cabinet_id})
+
+    if(cabinet_id != None):
+        #check if cabinet is valid in the db
+        cabinet_id = conn.execute('SELECT id from Cabinet WHERE id = ' + str(cabinet_id) + 'AND valid = 1;').fetchone()
+
+    if(cabinet_id == None):
+        conn.execute('INSERT INTO Cabinet(valid) VALUES(1);')
+        conn.commit()
+
+
+    return json.dumps({'success': True, 'cabinet_id': cabinet_id}), 200, {'ContentType':'application/json'}
 
 #Route to send the drink to be made
 @app.route('/tap',methods=['GET'])

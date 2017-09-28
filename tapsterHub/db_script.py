@@ -28,8 +28,8 @@ conn.execute('''
 
 conn.execute('''
     CREATE TABLE IF NOT EXISTS Cabinet (
-
-
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        valid INTEGER DEFAULT 0
     );
 ''')
 
