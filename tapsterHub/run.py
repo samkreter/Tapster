@@ -32,7 +32,7 @@ app = Flask(__name__)
 
 @app.route('/')
 def index():
-    return "Hello World Broski"
+    return render_template('index.html')
 
 
 @app.route('/addSettings', methods=['POST'])
